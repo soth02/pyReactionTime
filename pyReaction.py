@@ -30,17 +30,23 @@ def scale_background(width, height):
 scale_background(WIDTH, HEIGHT)
 
 # Fonts
-font = pygame.font.Font(None, 36)
+
+
+def get_scaled_font():
+    return pygame.font.Font(None, int(WIDTH * 0.045))
 
 
 def draw_text(text, color, x, y):
-    text_obj = font.render(text, 1, color)
+    text_obj = get_scaled_font().render(text, 1, color)
     screen.blit(text_obj, (x, y))
 
 
 def display_winner(winner_text):
     screen.fill(WHITE)
-    draw_text(winner_text, (0, 0, 0), WIDTH // 2 - 100, HEIGHT // 2)
+    winner_text_obj = get_scaled_font().render(winner_text, 1, (0, 0, 0))
+    text_rect = winner_text_obj.get_rect(center=(WIDTH // 2, HEIGHT // 2))
+    screen.blit(winner_text_obj, text_rect)
+
     pygame.display.flip()
     time.sleep(3)
 
@@ -67,8 +73,14 @@ def main():
         # Draw background image
         screen.blit(background, (0, 0))
 
+        # Calculate rectangle position based on screen size
+        rect_width = int(WIDTH * 0.125)
+        rect_height = int(HEIGHT * 0.167)
+        rect_x = (WIDTH - rect_width) // 2
+        rect_y = (HEIGHT - rect_height) // 2
+
         pygame.draw.rect(screen, square_color,
-                         (WIDTH // 2 - 50, HEIGHT // 2 - 50, 100, 100))
+                         (rect_x, rect_y, rect_width, rect_height))
 
         draw_text(f"P1: {p1_score}", ORANGE, 10, 10)
         draw_text(f"P2: {p2_score}", BLUE, WIDTH - 110, 10)
@@ -80,7 +92,9 @@ def main():
                 running = False
 
             if event.type == pygame.VIDEORESIZE:
-                WIDTH, HEIGHT = event.size
+                new_width, new_height = event.size
+                WIDTH = max(800, new_width)
+                HEIGHT = int(WIDTH * (600 / 800))
                 screen = pygame.display.set_mode(
                     (WIDTH, HEIGHT), pygame.RESIZABLE)
                 scale_background(WIDTH, HEIGHT)
