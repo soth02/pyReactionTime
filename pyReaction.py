@@ -15,12 +15,19 @@ WHITE = (255, 255, 255)
 # Screen dimensions
 WIDTH, HEIGHT = 800, 600
 
-# Create a window
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
+# Create a resizable window
+screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE)
 
 # Load background image
-background = pygame.image.load("Grid.png")
-background = pygame.transform.scale(background, (WIDTH, HEIGHT))
+background_image = pygame.image.load("Grid.png")
+
+
+def scale_background(width, height):
+    global background
+    background = pygame.transform.scale(background_image, (width, height))
+
+
+scale_background(WIDTH, HEIGHT)
 
 # Fonts
 font = pygame.font.Font(None, 36)
@@ -46,7 +53,7 @@ def reset_square():
 
 
 def main():
-    global square_color
+    global WIDTH, HEIGHT, screen, square_color
     running = True
     reset_square()
 
@@ -61,7 +68,7 @@ def main():
         screen.blit(background, (0, 0))
 
         pygame.draw.rect(screen, square_color,
-                         (WIDTH//2 - 50, HEIGHT//2 - 50, 100, 100))
+                         (WIDTH // 2 - 50, HEIGHT // 2 - 50, 100, 100))
 
         draw_text(f"P1: {p1_score}", ORANGE, 10, 10)
         draw_text(f"P2: {p2_score}", BLUE, WIDTH - 110, 10)
@@ -71,6 +78,12 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+
+            if event.type == pygame.VIDEORESIZE:
+                WIDTH, HEIGHT = event.size
+                screen = pygame.display.set_mode(
+                    (WIDTH, HEIGHT), pygame.RESIZABLE)
+                scale_background(WIDTH, HEIGHT)
 
             if event.type == pygame.KEYDOWN:
                 if square_color == GREEN:
